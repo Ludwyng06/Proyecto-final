@@ -1,59 +1,76 @@
-
-CREATE DATABASE TiendaDB;
+CREATE DATABASE ViviendaDW;
 GO
 
-USE TiendaDB;
+USE ViviendaDW;
 GO
 
-CREATE TABLE CatPrograma_clean (
-    programa VARCHAR(150) NOT NULL PRIMARY KEY
+CREATE TABLE DimPrograma (
+    programa VARCHAR(150) NOT NULL,
+    CONSTRAINT PK_DimPrograma PRIMARY KEY (programa)
 );
+GO
 
-CREATE TABLE CatTiempo_clean (
+CREATE TABLE DimTiempo (
     anio INT NOT NULL,
     mes VARCHAR(20) NOT NULL,
-    PRIMARY KEY (anio, mes)
+    CONSTRAINT PK_DimTiempo PRIMARY KEY (anio, mes)
 );
+GO
 
-CREATE TABLE CatMunicipio_clean (
+CREATE TABLE DimMunicipio (
+    cod_divipola_mun INT NOT NULL,
     departamento VARCHAR(100) NOT NULL,
     cod_divipola_depto INT NOT NULL,
     municipio VARCHAR(150) NOT NULL,
+    CONSTRAINT PK_DimMunicipio PRIMARY KEY (cod_divipola_mun)
+);
+GO
+
+CREATE TABLE HechosVivienda (
+    id_hecho BIGINT IDENTITY(1,1) NOT NULL,
+
+    consecutivo BIGINT NULL,
+    tipoacuerdo VARCHAR(50) NULL,
+    municipio VARCHAR(150) NULL,
+    cod_municipio INT NULL,
+    subregion VARCHAR(50) NULL,
+    fase VARCHAR(30) NULL,
+    nropobla INT NULL,
+    aportegob DECIMAL(18,2) NULL,
+    aportemun DECIMAL(18,2) NULL,
+    aporteotr DECIMAL(18,2) NULL,
+    fechainicio DATE NULL,
+    fechafin DATE NULL,
+    cantidadtotal INT NULL,
+
+    departamento VARCHAR(100) NULL,
+    cod_divipola_depto INT NULL,
+
+    municipio_subsidio VARCHAR(150) NULL,
     cod_divipola_mun INT NOT NULL,
-    PRIMARY KEY (cod_divipola_mun)
-);
 
-CREATE TABLE Hechos_Final_clean (
-    consecutivo BIGINT,
-    tipoacuerdo VARCHAR(50),
-    municipio VARCHAR(150),
-    cod_municipio INT,
-    subregion VARCHAR(50),
-    fase VARCHAR(30),
-    nropobla INT,
-    aportegob DECIMAL(18,2),
-    aportemun DECIMAL(18,2),
-    aporteotr DECIMAL(18,2),
-    fechainicio DATE,
-    fechafin DATE,
-    cantidadtotal INT,
-    departamento VARCHAR(100),
-    cod_divipola_depto INT,
-    municipio_subsidio VARCHAR(150),
-    cod_divipola_mun INT,
-    programa VARCHAR(150),
-    anio_asignacion INT,
-    estado_postulacion VARCHAR(100),
-    hogares INT,
-    valor_asignado DECIMAL(18,2),
-    tiene_subsidio VARCHAR(50),
+    programa VARCHAR(150) NOT NULL,
 
-    CONSTRAINT FK_Hechos_Programa FOREIGN KEY (programa) 
-        REFERENCES CatPrograma_clean(programa),
-    
-    CONSTRAINT FK_Hechos_Tiempo FOREIGN KEY (anio_asignacion, /* mes si existiera */) 
-        REFERENCES CatTiempo_clean(anio, mes),   
-    
-    CONSTRAINT FK_Hechos_Municipio FOREIGN KEY (cod_divipola_mun) 
-        REFERENCES CatMunicipio_clean(cod_divipola_mun)
+    anio_asignacion INT NOT NULL,
+    mes VARCHAR(20) NOT NULL,
+
+    estado_postulacion VARCHAR(100) NULL,
+    hogares INT NULL,
+    valor_asignado DECIMAL(18,2) NULL,
+    tiene_subsidio VARCHAR(50) NULL,
+
+    CONSTRAINT PK_HechosVivienda PRIMARY KEY (id_hecho),
+
+    CONSTRAINT FK_HechosVivienda_Programa
+        FOREIGN KEY (programa)
+        REFERENCES DimPrograma(programa),
+
+    CONSTRAINT FK_HechosVivienda_Tiempo
+        FOREIGN KEY (anio_asignacion, mes)
+        REFERENCES DimTiempo(anio, mes),
+
+    CONSTRAINT FK_HechosVivienda_Municipio
+        FOREIGN KEY (cod_divipola_mun)
+        REFERENCES DimMunicipio(cod_divipola_mun)
 );
+GO
